@@ -1,7 +1,7 @@
 <template>
     <el-row :gutter="20" class="header-style">
         <el-col :span="4" class="el-col-style"><div class="grid-content bg-purple">
-            <span class="review-title">Review管理系统</span>
+            <span class="review-title">管理系统</span>
         </div></el-col>
         <el-col :span="16" class="el-col-style"><div class="grid-content bg-purple">
             <el-menu

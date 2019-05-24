@@ -1,6 +1,6 @@
 <template>
     <div>
-        <FilterInput></FilterInput>
+        <FilterInput @filter-action="listenFilter"></FilterInput>
         <el-row>
             <el-col :span="24">
                 <div class="grid-content"  align="center">
@@ -19,22 +19,22 @@
                         <el-table-column
                                 align="center"
                                 prop="bu"
-                                label="BU"
+                                label="a"
                                 width="100">
                         </el-table-column>
                         <el-table-column
                                 align="center"
                                 prop="name"
-                                label="产品"
+                                label="b"
                                 width="100">
                         </el-table-column>
                         <el-table-column
                                 align="center"
                                 prop="asin"
-                                label="ASIN"
+                                label="c"
                                 width="140">
                         </el-table-column>
-                        <el-table-column align="center" prop="type" label="型号" width="100">
+                        <el-table-column align="center" prop="type" label="d" width="100">
                             <template slot="header" slot-scope="scope">
                                 <el-dropdown @command="handleCommand">
                                     <span class="el-dropdown-link">{{currentDropDown}}</span>
@@ -55,7 +55,7 @@
                                 sortable
                                 align="center"
                                 prop="rate"
-                                label="评分"
+                                label="e"
                                 width="100">
                             <template slot-scope="scope">
                                 <div @click="handleRateCellClick(scope.$index, scope.row)">{{ scope.row.rate }}</div>
@@ -64,44 +64,44 @@
                         <el-table-column
                                 align="center"
                                 prop="badreview"
-                                label="差评率(%)"
+                                label="f"
                                 width="100">
                         </el-table-column>
                         <el-table-column
                                 align="center"
                                 prop="small_rangking"
-                                label="小类排名"
+                                label="g"
                                 width="100">
                         </el-table-column>
                         <el-table-column
                                 align="center"
                                 prop="big_rangking2"
-                                label="大类排名"
+                                label="h"
                                 width="100">
                         </el-table-column>
-                        <el-table-column label="review走势"  align="center">
+                        <el-table-column label="i"  align="center">
                             <el-table-column
                                     align="center"
                                     prop="review2"
-                                    label="本月review"
+                                    label="i"
                                     width="100">
                             </el-table-column>
                             <el-table-column
                                     align="center"
                                     prop="review3"
-                                    label="上月review"
+                                    label="j"
                                     width="100">
                             </el-table-column>
                             <el-table-column
                                     align="center"
                                     prop="review4"
-                                    label="本周review"
+                                    label="k"
                                     width="100">
                             </el-table-column>
                             <el-table-column
                                     align="center"
                                     prop="review5"
-                                    label="上周review"
+                                    label="l"
                                     width="100">
                             </el-table-column>
                         </el-table-column>
@@ -132,8 +132,8 @@
     import Vue from 'vue';
     import FilterInput from './FilterInput.vue';
     import Graphic from '../Graphic.vue';
+    import axios from 'axios';
     import { Table,TableColumn, Row, Col, Pagination, Dropdown, DropdownMenu, DropdownItem,Dialog, Tabs, TabPane } from 'element-ui';
-    import { tableData,reviewData,rateData } from '../mock.js';
     Vue.use(Table);
     Vue.use(Dialog);
     Vue.use(TableColumn);
@@ -167,16 +167,27 @@
                 popShow : false,
                 tableData : [],
                 currentPage: 1,
-                currentDropDown :'型号',
+                currentDropDown :'all',
                 total : 20,
                 tabName: 'review',
                 currentTab : '',
                 lineData : [],
-                tabsData : [{name : 'review',title : 'REVIEW'},{name : 'rate',title : '评分'}]
+                tabsData : [{name : 'review',title : 'REVIEW'},{name : 'rate',title : '评分'}],
+                inputFilterParams :null
             }
         },
         created (){
-            this.tableData = tableData;
+           axios({
+                url:'/api/list',
+                method:'get'
+            }).then(res=>{
+                if(res.data.code === 200){
+                    let data = res.data.data;
+                    this.tableData = data.list;
+                    this.currentPage = data.currentPage;
+                    this.total = data.total;
+                }
+            });
         },
         methods : {
             // 修改table header的背景色
@@ -195,13 +206,36 @@
             },
             handleCommand(command) {
                 if(!command){
-                    this.currentDropDown = '全部型号';
+                    this.currentDropDown = 'all';
                     return
                 }
                 this.currentDropDown = command;
             },
             handleCurrentChange(val) {
-                console.log(`当前页: ${val}`);
+                let _this = this;
+                let keys = this.inputFilterParams ? Object.keys(this.inputFilterParams) : 0;
+                this.currentPage = val;
+                let req = {
+                    currentPage : val
+                };
+                if(keys.length > 0){
+                    keys.forEach(item=>{
+                        req[item] = _this.inputFilterParams[item];
+                    })
+                }
+                axios({
+                    url:'/api/filter',
+                    method:'post',
+                    data:req
+                }).then(res=>{
+                    if(res.data.code === 200){
+                        let data = res.data.data;
+                        this.currentPage = data.currentPage;
+                        this.tableData = data.list;
+                        this.total = data.total;
+                        console.log('点击翻页')
+                    }
+                })
             },
             handleReviewCellClick(index,row){
                 this.currentTab = Object.keys(row)[4];
@@ -217,8 +251,8 @@
             afterPopShow () {
                 this.tabName = this.currentTab;
                 this.setTabBarStyle();
-                //获取图表展示数据
-                this.tabName === 'review' ? this.lineData = [...reviewData] : this.lineData = [...rateData];
+                 //获取图表展示数据
+                this.getChartData(this.tabName);
             },
             handleClickTab(me,event){
               if(me.name == this.currentTab){
@@ -227,13 +261,49 @@
               this.setTabBarStyle();
               this.currentTab = this.tabName;
               //获取图表展示数据
-              this.tabName === 'review' ? this.lineData = [...reviewData] : this.lineData = [...rateData];
+              this.getChartData(this.tabName);
+            },
+            getChartData(type) {
+                let _this = this;
+                axios({
+                    url:'/api/chart',
+                    method : 'post',
+                    data: {
+                        type : type
+                    }
+                }).then(res=>{
+                   if(res.data.code === 200){
+                       _this.lineData = [...res.data.data];
+                   }
+                })
             },
             setTabBarStyle () {
                 let tab = this.tabsData.map(item => item.name);
                 let barWith = tab.indexOf(this.tabName) * 80;
                 this.$nextTick(()=>{
                     document.querySelector('.el-tabs__active-bar').style.cssText = `transform : translateX(${barWith}px)`;
+                })
+            },
+            listenFilter(inputParams){
+                this.inputFilterParams = {...inputParams};
+                axios({
+                    url:'/api/filter',
+                    method:'post',
+                    data:{
+                        bu : inputParams.bu,
+                        pro: inputParams.pro,
+                        asin: inputParams.asin,
+                        type: inputParams.type,
+                        currentPage:this.currentPage
+                    }
+                }).then(res=>{
+                    if(res.data.code === 200){
+                        let data = res.data.data;
+                        this.currentPage = data.currentPage;
+                        this.tableData = data.list;
+                        this.total = data.total;
+                        console.log('点击筛选')
+                    }
                 })
             }
         }

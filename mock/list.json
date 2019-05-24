@@ -1,0 +1,8 @@
+{
+    "code" : 200,
+    "data":{
+        "list" : [{"name" : "list","age" : "22"}],
+        "currentPage" : 1,
+        "total" : 20
+    }
+}

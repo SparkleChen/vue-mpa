@@ -33,6 +33,12 @@
                 return `echarts-id${this.dynmicId}`
             }
         },
+          watch: {
+            lineData(nv,ov){
+                this.lineData = nv;
+                this.setEchartsOption(this.optionConfig(this.lineData));
+            }
+        },
         methods : {
           optionConfig (data) {
               let dateList = data.map(item => item[0]);
@@ -58,7 +64,7 @@
                       data: dateList
                   }],
                   yAxis: [{
-                      name : 'Review',
+                      name : 'name',
                       nameGap : 20,
                       splitLine: {show: false}
                   }],
@@ -76,8 +82,6 @@
         mounted() {
             // 基于准备好的dom，初始化echarts实例
             this.myChart = echarts.init(document.getElementById(`echarts-id${this.dynmicId}`));
-            // 绘制图表
-            this.setEchartsOption(this.optionConfig(this.lineData));
         }
     }
 </script>

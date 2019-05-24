@@ -3,27 +3,27 @@
         <el-row :gutter="20">
             <el-col :span="5">
                 <div class="grid-content bg-purple">
-                    <el-input placeholder="请输入BU筛选" v-model="inputBu" clearable></el-input>
+                    <el-input placeholder="请输入筛选" v-model="inputBu" clearable></el-input>
                 </div>
             </el-col>
             <el-col :span="5">
                 <div class="grid-content bg-purple">
-                    <el-input placeholder="请输入产品名筛选" v-model="inputPro" clearable></el-input>
+                    <el-input placeholder="请输入筛选" v-model="inputPro" clearable></el-input>
                 </div>
             </el-col>
             <el-col :span="5">
                 <div class="grid-content bg-purple">
-                    <el-input placeholder="请输入型号筛选" v-model="inputType" clearable></el-input>
+                    <el-input placeholder="请输入筛选" v-model="inputType" clearable></el-input>
                 </div>
             </el-col>
             <el-col :span="5">
                 <div class="grid-content bg-purple">
-                    <el-input placeholder="请输入ASIN筛选" v-model="inputAsin" clearable></el-input>
+                    <el-input placeholder="请输入筛选" v-model="inputAsin" clearable></el-input>
                 </div>
             </el-col>
             <el-col :span="4">
                 <div class="grid-content bg-purple filter-btn">
-                    <el-button type="primary">筛选</el-button>
+                    <el-button type="primary" @click="handleClickFilter">筛选</el-button>
                 </div>
             </el-col>
         </el-row>
@@ -51,6 +51,12 @@
                 inputPro : '',
                 inputType : '',
                 inputAsin : ''
+            }
+        },
+         methods: {
+            handleClickFilter (){
+                let {...input} = {bu:this.inputBu,pro:this.inputPro,type:this.inputType,asin:this.inputAsin};
+                this.$emit('filter-action',input);
             }
         }
     }
