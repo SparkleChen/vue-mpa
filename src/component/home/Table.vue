@@ -108,7 +108,7 @@
                     </el-table>
                     <el-dialog :visible.sync="popShow" width="70%" @open="afterPopShow">
                         <el-tabs v-model="tabName"  @tab-click="handleClickTab" >
-                            <el-tab-pane :key="item.name" v-for="(item, index) in tabsData" :label="item.title" :name="item.name" :lazy="true" >
+                            <el-tab-pane :key="index" v-for="(item, index) in tabsData" :label="item.title" :name="item.name" :lazy="true" >
                                 <graphic :line-data="lineData" :dynmic-id="item.name"></graphic>
                             </el-tab-pane>
                         </el-tabs>

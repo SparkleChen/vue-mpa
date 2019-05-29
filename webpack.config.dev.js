@@ -11,7 +11,13 @@ module.exports = merge(baseConfig,{
     },
     mode: 'development',
     devServer: {
-        historyApiFallback: true,
+        historyApiFallback: {
+            rewrites: [
+                { from: /^\/sys\/login/, to: '/view/login.html' },
+                { from: /^\/sys\/home/, to: '/view/home.html' },
+                { from: /^\/sys\/detail/, to: '/view/detail.html' }
+              ]
+        },
         inline: true,
         port: 8888,
         proxy: {
