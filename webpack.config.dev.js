@@ -13,9 +13,9 @@ module.exports = merge(baseConfig,{
     devServer: {
         historyApiFallback: {
             rewrites: [
-                { from: /^\/sys\/login/, to: '/view/login.html' },
-                { from: /^\/sys\/home/, to: '/view/home.html' },
-                { from: /^\/sys\/detail/, to: '/view/detail.html' }
+                { from: /^\/review\/login/, to: '/view/login.html' },
+                { from: /^\/review\/home/, to: '/view/home.html' },
+                { from: /^\/review\/detail/, to: '/view/detail.html' }
               ]
         },
         inline: true,
