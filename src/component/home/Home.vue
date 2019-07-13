@@ -8,11 +8,11 @@
                 <Table></Table>
             </el-main>
         </el-container>
-            <test v-slot:otherSlot="slotProps">
+            <slot-test v-slot:otherSlot="slotProps">
                 <template>
                     {{slotProps.user.lastName}}
                 </template>    
-            </test>    
+            </slot-test>    
     </div>
 </template>
 
@@ -20,7 +20,7 @@
     import Vue from 'vue';
     import Nav from '../Nav.vue';
     import Table from './Table.vue';
-    import Test from '../Test.vue';
+    import SlotTest from '../SlotTest.vue';
     import { Header,Main,Row, Col,Container } from 'element-ui';
     Vue.use(Header);
     Vue.use(Main);
@@ -30,7 +30,7 @@
     export default {
         name: 'Home',
         components : {
-          Test,
+          SlotTest,
           Nav,
           Table,
           Header,
